@@ -93,9 +93,22 @@ Route::get('/dashboard', [Analytics::class, 'index'])->name('dashboard-analytics
 Route::get('/dashboard/dashboards-analytics', [Analytics::class, 'index'])->name('dashboards-analytics');
 
 //PLANNING
+Route::prefix('planning')->group(function () {
+    Route::get('/list-of-employee', [UserController::class, 'index'])->name('planning.list-of-employee');
+    Route::get('/import-form', [UserController::class, 'showImportForm'])->name('planning.import-form');
+    Route::post('/import', [UserController::class, 'importEmployees'])->name('planning.import');});
 
 Route::get('/planning/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
+//registration-form
+Route::prefix('planning')->group(function () {
+    Route::get('/registration-form', [RegistrationForm::class, 'index'])->name('registration-form.index');
+    Route::post('/planning/list-of-employee', [UserController::class, 'store'])->name('employee.store');});
+Route::get('/planning/registration-form', [\App\Http\Controllers\Api\UserController::class, 'create'])->name('employee.registration-form');
+
+
+
+    
 Route::get('/planning/list-of-employee', [UserController::class, 'bladeIndex'])->name('employee.view-blade');
 Route::get('/planning/list-of-employee/{id}', [UserController::class, 'show'])->name('employee.view');
 Route::get('/planning/list-of-employee/{id}/view', [UserController::class, 'showEmployeeView'])
@@ -106,11 +119,10 @@ Route::get('/planning/active-employees', [\App\Http\Controllers\Planning\UserCon
 Route::get('/planning/retired-employees', [\App\Http\Controllers\Planning\UserController::class, 'retired'])->name('employee.retired');
 Route::get('/planning/resigned-employees', [\App\Http\Controllers\Planning\UserController::class, 'resigned'])->name('employee.resigned');
 
-
-Route::prefix('/planning/registration-form')->name('employee.')->group(function () {
-    Route::get('/', [\App\Http\Controllers\Planning\UserController::class, 'create'])->name('registration-form');
-    Route::post('/store', [\App\Http\Controllers\Planning\UserController::class, 'store'])->name('store');
-    Route::get('/get-sections', [\App\Http\Controllers\Planning\UserController::class, 'getSections'])->name('sections');
+//import
+Route::prefix('planning')->group(function () {
+    Route::get('/import-form', [\App\Http\Controllers\Api\UserController::class, 'showImportForm'])->name('planning.import-form');
+    Route::post('/import', [\App\Http\Controllers\Api\UserController::class, 'importEmployees'])->name('planning.import');
 });
 
 Route::prefix('/planning/division')->group(function () {

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
@@ -10,6 +11,8 @@ use App\Models\Division;
 use App\Models\Section;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use App\Imports\EmployeesImport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class UserController extends Controller
 {
@@ -153,4 +156,28 @@ class UserController extends Controller
 
     return response()->json($sections);
   }
+    public function showImportForm()
+    {
+        $employmentStatuses = EmploymentStatus::all();
+        $divisions = Division::all();
+        $sections = Section::all();
+
+        return view('content.planning.import-form', compact('employmentStatuses', 'divisions', 'sections'));
+    }
+    public function importEmployees(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:csv,txt'
+        ]);
+
+        if (!$request->hasFile('file')) {
+            return back()->with('error', 'No file was uploaded.');
+        }
+
+        Excel::import(new EmployeesImport, $request->file('file'));
+
+        return back()->with('success', 'Employees imported successfully!');
+    }
+
+
 }
