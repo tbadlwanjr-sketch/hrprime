@@ -56,4 +56,9 @@ protected $fillable = [
 
     // ... rest of logic
 }
+public function User()
+{
+    return $this->belongsTo(User::class);
+}
+
 }

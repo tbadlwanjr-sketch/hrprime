@@ -129,6 +129,10 @@ Route::prefix('planning')->name('planning.')->group(function () {
     Route::get('/import-form', [\App\Http\Controllers\Api\UserController::class, 'showImportForm'])->name('import-form');
     Route::post('/import', [\App\Http\Controllers\Api\UserController::class, 'importEmployees'])->name('import');});
 
+// User Profile
+  // basic information
+Route::get('/planning/profile/basic-information', [\App\Http\Controllers\Api\UserController::class, 'showEmpProfile'])->name('employee.basic-information');
+    Route::post('/employee/update-basic-info/{id}', [EmployeeController::class, 'updateBasicInfo'])->name('employee.updateBasicInfo');
 
 // Division Management
 Route::prefix('planning/division')->name('division.')->group(function () {

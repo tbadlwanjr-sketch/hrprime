@@ -16,7 +16,7 @@
 <div class="card">
   <div class="container py-4">
         <div class="d-flex justify-content-between align-items-center mb-3">
-          <h4>
+          <h4 style="color: #1d4bb2;">
             @if (Request::is('planning/retired-employees'))
               Retired Employees
             @elseif (Request::is('planning/resigned-employees'))
@@ -28,9 +28,12 @@
             @endif
           </h4>
 
-          @unless (Request::is('planning/retired-employees') || Request::is('planning/resigned-employees'))
-            <a href="{{ url('planning/registration-form') }}" class="btn btn-success">Add New Employee</a>
-          @endunless
+            @unless (Request::is('planning/retired-employees') || Request::is('planning/resigned-employees'))
+              <div class="d-flex gap-2">
+                <a href="{{ url('planning/registration-form') }}" class="btn btn-success">Add New Employee</a>
+                <a href="{{ url('planning/import-form') }}" class="btn btn-primary">Import Employees</a>
+              </div>
+            @endunless
         </div>
     <div class="table-responsive">
       <table id="empTable" class="table">

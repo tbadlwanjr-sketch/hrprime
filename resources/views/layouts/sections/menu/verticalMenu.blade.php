@@ -6,7 +6,7 @@
          color: #fff;">
 
 <!-- colored-background -->
-<!-- <aside id="layout-menu" class="layout-menu menu-vertical menu" style="background: linear-gradient(180deg,rgb(26, 26, 152),rgb(130, 41, 5)); color: #fff;"> -->
+<!-- <aside id="layout-menu" class="layout-menu menu-vertical menu" style="background:#ff3131; color: #fff;"> -->
 
 
 
@@ -86,40 +86,83 @@
 
 </aside>
 <style>
-  .layout-menu .menu-inner .menu-item a,
-  .layout-menu .menu-inner .menu-header-text,
-  .layout-menu .menu-inner .menu-item i {
-    color: #ffffff !important;
-  }
+/* General menu items and icons */
+.layout-menu .menu-inner .menu-item a,
+.layout-menu .menu-inner .menu-header-text,
+.layout-menu .menu-inner .menu-item i {
+  color: #ffffff !important;
+}
 
-  .layout-menu .menu-inner .menu-item a:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-    color: #ffffff !important;
-  }
-    /* Change color of bullet (menu indicator or dot if any) */
-    .layout-menu .menu-item::before {
-      color: #ffffff !important;
-    }
+.layout-menu .menu-inner .menu-item a:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #ffffff !important;
+}
 
-    /* Change color of the dropdown toggle arrow */
-    .layout-menu .menu-toggle::after {
-      color: #ffffff !important;
-    }
-    .layout-menu .menu-item::before {
-      color: #ffffff !important; /* Already present in your code, good */
-      background-color: #ffffff !important; /* Add this if it's a dot or square */
-    }
+/* Menu bullets and indicators */
+.layout-menu .menu-item::before,
+.layout-menu .menu-item .menu-link::before {
+  color: #ffffff !important;
+  background-color: #ffffff !important;
+}
 
-    /* Example 2: For vertical line indicators on the left of active/open menu */
-    .layout-menu .menu-item.active::before,
-    .layout-menu .menu-item.open::before {
-      background-color: #ffffff !important;
-    }
+/* Active/open menu item */
+.layout-menu .menu-item.active,
+.layout-menu .menu-item.open {
+  border-left: 3px solid #ffffff !important;
+}
 
-    .layout-menu .menu-item .menu-link::before {
-      background-color: #ffffff !important;
-    }
-    .layout-menu .menu-item.active {
-      border-left: 3px solid #ffffff !important;
-    }
+.layout-menu .menu-item.active::before,
+.layout-menu .menu-item.open::before {
+  background-color: #ffffff !important;
+}
+
+/* ------------------------------
+   Dropdown Arrow (Restore & Style)
+------------------------------- */
+.layout-menu .menu-toggle::after {
+  content: '\203A'; /* Unicode › */
+  float: right;
+  margin-left: auto;
+  transition: transform 0.3s ease;
+  color: #ffffff !important;
+  font-size: 1.4rem;
+}
+
+/* Rotate arrow when open */
+.layout-menu .menu-item.open > .menu-toggle::after {
+  transform: rotate(90deg); /* ▼ */
+}
+
+/* ------------------------------
+   Submenu Styles
+------------------------------- */
+.layout-menu .menu-sub {
+  background-color: rgba(255, 255, 255, 0.05);
+  padding-left: 1rem;
+  border-left: 2px solid rgba(255, 255, 255, 0.33);
+  transition: all 0.3s ease-in-out;
+}
+
+.layout-menu .menu-sub .menu-item a {
+  color: rgba(255, 255, 255, 0.85) !important;
+  font-size: 0.9rem;
+  padding-left: 1.5rem;
+}
+
+.layout-menu .menu-sub .menu-item a:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+  color: #ffffff !important;
+}
+
+.layout-menu .menu-sub .menu-item.active > a {
+  color: #ffffff !important;
+  font-weight: bold;
+  border-left: 3px solid #ffffff;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.layout-menu .menu-sub .menu-item {
+  margin-bottom: 5px;
+}
+
 </style>

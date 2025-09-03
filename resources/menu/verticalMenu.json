@@ -13,6 +13,77 @@
       ]
     },
     {
+      "name": "User Profile",
+      "slug": "profile",
+      "submenu": [
+        {
+          "url": "planning/profile/basic-information",
+          "name": "Basic Information",
+          "slug": "basic"
+        },
+        {
+          "url": "planning/profile/family-background",
+          "name": "Family Background",
+          "slug": "background"
+        },
+        {
+          "url": "planning/profile/education",
+          "name": "Educational",
+          "slug": "education"
+        },
+        {
+          "url": "planning/profile/cs-eligibilty",
+          "name": "CS Eligibility",
+          "slug": "eligibility"
+        },
+        {
+          "url": "planning/profile/experience",
+          "name": "Work Experience",
+          "slug": "experience"
+        },
+        {
+          "url": "planning/profile/voluntary-work",
+          "name": "Voluntary Work",
+          "slug": "voluntary"
+        },
+        {
+          "url": "planning/profile/learning-developmwnt",
+          "name": "Learning and Development",
+          "slug": "landd"
+        },
+        {
+          "url": "planning/profile/reference",
+          "name": "References",
+          "slug": "references"
+        },
+        {
+          "url": "planning/profile/government-id",
+          "name": "Government ID",
+          "slug": "id"
+        },
+        {
+          "url": "planning/profile/non-academic",
+          "name": "Non-academic",
+          "slug": "non-academic"
+        },
+        {
+          "url": "planning/profile/organization",
+          "name": "Organization",
+          "slug": "organization"
+        },
+        {
+          "url": "planning/profile/skills",
+          "name": "Skills",
+          "slug": "skills"
+        },
+        {
+          "url": "planning/profile/other-information",
+          "name": "Other Information",
+          "slug": "other-information"
+        }
+      ]
+    },
+    {
   "name": "Planning",
   "icon": "menu-icon tf-icons ri-layout-2-line",
   "slug": "planning",
@@ -22,6 +93,7 @@
       "name": "Dashboard",
       "slug": "dashboard"
     },
+
     {
       "name": "Employees",
       "slug": "employees",
@@ -45,50 +117,36 @@
           "url": "planning/resigned-employees",
           "name": "Resigned Employees",
           "slug": "resigned-employees"
-        },
-        {
-         "url": "planning/import-form",
-          "name": "Import Employees",
-          "slug": "import-form"
         }
       ]
     },
-    {
-      "url": "planning/office-location",
-      "name": "Office Locations",
-      "slug": "office-location"
+     {
+      "name": "OBSU",
+      "slug": "OBSU",
+      "submenu": [
+        {
+          "url": "planning/office-location",
+          "name": "Office Locations",
+          "slug": "office-location"
+        },
+        {
+          "url": "planning/division",
+          "name": "Divisions",
+          "slug": "division"
+        },
+        {
+          "url": "planning/section",
+          "name": "Sections",
+          "slug": "section"
+        },
+        {
+          "url": "planning/unit",
+          "name": "Units",
+          "slug": "unit"
+        }
+      ]
     },
-    {
-      "url": "planning/division",
-      "name": "Divisions",
-      "slug": "division"
-    },
-    {
-      "url": "planning/section",
-      "name": "Sections",
-      "slug": "section"
-    },
-    {
-      "url": "planning/unit",
-      "name": "Units",
-      "slug": "unit"
-    },
-    {
-      "url": "planning/qualification",
-      "name": "Qualifications",
-      "slug": "qualification"
-    },
-    {
-      "url": "planning/employment-status",
-      "name": "Employment Status",
-      "slug": "employment-status"
-    },
-    {
-      "url": "planning/salary-grade",
-      "name": "Salary Grade",
-      "slug": "salary-grade"
-    },
-    {
+      {
       "name": "Positions",
       "slug": "position",
       "submenu": [
@@ -106,11 +164,32 @@
           "url": "planning/parenthetical-title",
           "name": "Parenthetical Titles",
           "slug": "parenthetical-title"
-        },
+        }
+      ]
+    },
+      {
+      "name": "Recruitment",
+      "slug": "recruitment",
+      "submenu": [
         {
           "url": "planning/vacant-position",
           "name": "Vacant Positions",
           "slug": "vacant-position"
+        },
+        {
+          "url": "planning/employment-status",
+          "name": "Employment Status",
+          "slug": "employment-status"
+        },
+        {
+          "url": "planning/qualification",
+          "name": "Qualifications",
+          "slug": "qualification"
+        },
+        {
+          "url": "planning/salary-grade",
+          "name": "Salary Grade",
+          "slug": "salary-grade"
         }
       ]
     },
@@ -123,17 +202,7 @@
       "url": "planning/report",
       "name": "Reports",
       "slug": "report"
-    },
-    {
-      "name": "Settings",
-      "slug": "settings",
-      "submenu": [
-        {
-          "url": "planning/SG Management",
-          "name": "SG-Management",
-          "slug": "sg-management"
-        }
-      ]}
+    }
     
   ]
 },

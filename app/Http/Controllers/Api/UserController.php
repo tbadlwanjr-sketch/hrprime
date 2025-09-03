@@ -14,8 +14,9 @@ use Illuminate\Support\Str;
 use App\Imports\EmployeesImport;
 use Maatwebsite\Excel\Facades\Excel;
 
-class UserController extends Controller
+  class UserController extends Controller
 {
+  
   public function index(Request $request)
   {
     $query = User::with([
@@ -91,6 +92,13 @@ class UserController extends Controller
     return response()->json($user);
   }
 
+  public function showEmployeeView($id)
+  {
+
+    $employee = User::with (['division', 'section', 'employmentStatus']) ->findOrfail($id);
+    return view('content.planning.view-employee', compact('employee'));
+  }
+
   public function update(Request $request, $id)
   {
     $user = User::findOrFail($id);
@@ -142,11 +150,16 @@ class UserController extends Controller
 
     return response()->json($employees);
   }
-  public function showEmployeeView($id)
-  {
-    $employee = User::with(['division', 'section', 'employmentStatus'])->findOrFail($id);
-    return view('content.planning.view-employee', compact('employee'));
-  }
+public function showEmpProfile()
+{
+    $user = auth()->user();
+    if (!$user) {
+        return redirect()->route('login')->with('error', 'Please login first.');
+    }
+
+    $employee = $user->load(['division', 'section', 'employmentStatus']);
+    return view('content.planning.profile.basic-information', compact('employee'));
+}
 
   public function editEmployeeView($id)
   {
@@ -226,6 +239,7 @@ class UserController extends Controller
 
         return redirect()->back()->with('error', 'Import failed: ' . $e->getMessage());
     }
+    
 }
 
 }

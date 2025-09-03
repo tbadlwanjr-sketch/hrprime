@@ -14,7 +14,7 @@
   <div class="container py-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
       <h4 style="color: #1d4bb2;">List of Position Levels</h4>
-      <button id="openModalBtn" class="btn btn-success">+ Add New Position Level</button>
+      <button id="openModalBtn" class="btn btn-success">Add New Position Level</button>
     </div>
 
     <div class="table-responsive">
