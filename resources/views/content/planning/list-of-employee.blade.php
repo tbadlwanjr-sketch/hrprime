@@ -16,7 +16,7 @@
 <div class="card">
   <div class="container py-4">
         <div class="d-flex justify-content-between align-items-center mb-3">
-          <h4>
+          <h4 style="color: #1d4bb2;">
             @if (Request::is('planning/retired-employees'))
               Retired Employees
             @elseif (Request::is('planning/resigned-employees'))
@@ -28,17 +28,21 @@
             @endif
           </h4>
 
-          @unless (Request::is('planning/retired-employees') || Request::is('planning/resigned-employees'))
-            <a href="{{ url('planning/registration-form') }}" class="btn btn-success">Add New Employee</a>
-          @endunless
+            @unless (Request::is('planning/retired-employees') || Request::is('planning/resigned-employees'))
+              <div class="d-flex gap-2">
+                <a href="{{ url('planning/registration-form') }}" class="btn btn-success">Add New Employee</a>
+                <a href="{{ url('planning/import-form') }}" class="btn btn-primary">Import Employees</a>
+              </div>
+            @endunless
         </div>
     <div class="table-responsive">
       <table id="empTable" class="table">
       <thead class="table-light">
         <tr>
+          <!-- <th>Photo</th> -->
           <th style="width: 0;">ID No.</th>
           <th>Employee Name</th>
-          <th>Email</th> <!-- NEW -->
+          <!-- <th>Email</th> NEW -->
           <th>Employment Status</th>
           <th>Section</th>
           <th>Division</th>
@@ -50,6 +54,13 @@
       <tbody>
         @foreach($employees as $employee)
         <tr>
+          <!-- <td>
+            @if ($employee->profile_image)
+              <img src="{{ asset($employee->profile_image) }}" alt="Profile" width="50" height="50" class="rounded-circle">
+            @else
+              <img src="{{ asset('default-user.png') }}" alt="No Photo" width="50" height="50" class="rounded-circle">
+            @endif
+          </td> -->
           <td>{{ $employee->employee_id }}</td>
           <td>
             {{ Str::upper($employee->first_name) }}
@@ -57,7 +68,7 @@
             {{ Str::upper($employee->last_name) }}
             {{ Str::upper($employee->extension_name) }}
           </td>
-          <td>{{ $employee->email }}</td> <!-- NEW -->
+          <!-- <td>{{ $employee->email }}</td> NEW -->
           <td>{{ Str::upper($employee->employmentStatus->abbreviation ?? '') }}</td>
           <td>{{ Str::upper($employee->section->abbreviation ?? '') }}</td>
           <td>{{ Str::upper($employee->division->abbreviation ?? '') }}</td>
