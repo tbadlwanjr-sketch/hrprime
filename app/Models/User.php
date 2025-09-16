@@ -22,7 +22,7 @@ class User extends Authenticatable
     'username',
     'email',
     'password',
-    'profile_image'
+    'gender',
   ];
 
   protected $hidden = [
@@ -38,7 +38,18 @@ class User extends Authenticatable
   {
     return $this->belongsTo(Section::class);
   }
+  public function getSections(Request $request)
+  {
+    $divisionId = $request->division_id;
 
+    if (!$divisionId) {
+      return response()->json([]);
+    }
+
+    $sections = Section::where('division_id', $divisionId)->get(['id', 'name']); // or ['id', 'abbreviation'] if you're using abbreviations
+
+    return response()->json($sections);
+  }
   public function employmentStatus()
   {
     return $this->belongsTo(EmploymentStatus::class, 'employment_status_id');
@@ -48,11 +59,13 @@ class User extends Authenticatable
   {
     return $this->belongsTo(Qualification::class);
   }
-
-  public function courses()
+  public function model(array $row)
   {
-    return $this->belongsToMany(\App\Models\Course::class, 'course_enrollments')
-      ->withPivot('status')
-      ->withTimestamps();
+    // Dump the row to test if import reads it
+    \Log::info('IMPORTING ROW: ', $row);
+
+    if (strtolower($row[0]) === 'username') return null;
+
+    // ... rest of logic
   }
 }

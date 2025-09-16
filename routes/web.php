@@ -72,8 +72,6 @@ use App\Http\Controllers\Planning\PositionLevelController;
 use App\Http\Controllers\Planning\ParentheticalTitleController;
 use App\Http\Controllers\Planning\ReportController;
 use App\Http\Controllers\Planning\JoRequestController;
-use App\Http\Controllers\Planning\UserController as PlanningUserController;
-
 //PAS
 use App\Http\Controllers\pas\FundSourceController;
 use App\Http\Controllers\pas\PayrollController;
@@ -125,54 +123,17 @@ Route::get('/planning/active-employees', [\App\Http\Controllers\Planning\UserCon
 Route::get('/planning/retired-employees', [\App\Http\Controllers\Planning\UserController::class, 'retired'])->name('employee.retired');
 Route::get('/planning/resigned-employees', [\App\Http\Controllers\Planning\UserController::class, 'resigned'])->name('employee.resigned');
 
-// Import Employees
-Route::prefix('planning')->name('planning.')->group(function () {
-  Route::get('/import-form', [\App\Http\Controllers\Api\UserController::class, 'showImportForm'])->name('import-form');
-  Route::post('/import', [\App\Http\Controllers\Api\UserController::class, 'importEmployees'])->name('import');
+//import
+Route::prefix('planning')->group(function () {
+  Route::get('/import-form', [\App\Http\Controllers\Api\UserController::class, 'showImportForm'])->name('planning.import-form');
+  Route::post('/import', [\App\Http\Controllers\Api\UserController::class, 'importEmployees'])->name('planning.import');
 });
 
-// User Profile
-// basic information
-Route::get('/planning/profile/basic-information', [UserController::class, 'showEmpProfile'])
-  ->name('employee.basic-information');
-
-Route::get('/planning/profile/courses_enrolled', [UserController::class, 'showCoursesEnrolled'])
-  ->name('employee.courses_enrolled');
-
-// Show all available courses
-Route::get('/planning/profile/courses_list', [UserController::class, 'showCourses'])
-  ->name('employee.courses_list');
-
-// Enroll in a course
-Route::get('/planning/profile/courses/enroll/{id}', [UserController::class, 'enrollCourse'])
-  ->name('employee.enrollCourse');
-
-Route::get('/planning/profile/courses/view/{id}', [UserController::class, 'viewCourse'])
-  ->name('employee.viewCourse');
-
-Route::middleware(['auth'])->prefix('planning/profile')->group(function () {
-  Route::get('/courses', [UserController::class, 'showCourses'])
-    ->name('employee.courses');
-
-  Route::get('/courses/enroll/{id}', [UserController::class, 'enrollCourse'])
-    ->name('employee.enrollCourse');
-});
-Route::post('/planning/profile/courses/complete/{courseId}', [UserController::class, 'completeCourse'])
-  ->name('user.completeCourse')
-  ->middleware('auth');
-
-// routes/web.php
-Route::get('/courses/take/{id}', [UserController::class, 'takeCourse'])->name('employee.takeCourse');
-Route::post('/courses/submit-assessment/{id}', [UserController::class, 'submitAssessment'])->name('employee.submitAssessment');
-
-// Route::post('/employee/update-basic-info/{id}', [EmployeeController::class, 'updateBasicInfo'])->name('employee.updateBasicInfo');
-
-// Division Management
-Route::prefix('planning/division')->name('division.')->group(function () {
-  Route::get('/', [DivisionController::class, 'index'])->name('index');
-  Route::post('/store', [DivisionController::class, 'store'])->name('store');
-  Route::post('/{id}/update', [DivisionController::class, 'update'])->name('update');
-  Route::post('/{id}/delete', [DivisionController::class, 'destroy'])->name('delete');
+Route::prefix('/planning/division')->group(function () {
+  Route::get('/', [DivisionController::class, 'index'])->name('division.index');
+  Route::post('/store', [DivisionController::class, 'store'])->name('division.store');
+  Route::post('/{id}/update', [DivisionController::class, 'update'])->name('division.update');
+  Route::post('/{id}/delete', [DivisionController::class, 'destroy'])->name('division.delete');
 });
 
 //Section Management
@@ -209,7 +170,6 @@ Route::prefix('/planning/office-location')->group(function () {
   Route::post('/{id}/delete', [OfficeLocationController::class, 'destroy'])->name('office-location.delete');
 });
 
-//Qualification
 Route::prefix('planning/qualification')->name('qualifications.')->group(function () {
   Route::get('/', [QualificationController::class, 'index'])->name('index');
   Route::post('/', [QualificationController::class, 'store'])->name('store');
@@ -217,7 +177,6 @@ Route::prefix('planning/qualification')->name('qualifications.')->group(function
   Route::delete('/{id}', [QualificationController::class, 'destroy'])->name('destroy');
 });
 
-//Salary Grade
 Route::prefix('/planning/salary-grade')->group(function () {
   Route::get('/', [SalaryGradeController::class, 'index'])->name('salary-grade.index');
   Route::post('/store', [SalaryGradeController::class, 'store'])->name('salary-grade.store');
@@ -225,14 +184,11 @@ Route::prefix('/planning/salary-grade')->group(function () {
   Route::post('/{id}/delete', [SalaryGradeController::class, 'destroy'])->name('salary-grade.delete');
 });
 
-// Employee Management
-Route::prefix('employee')->name('employee.')->group(function () {
-  Route::get('{id}/edit', [UserController::class, 'edit'])->name('edit');
-  Route::put('{id}/update', [UserController::class, 'update'])->name('update');
-  Route::get('sections', [UserController::class, 'getSections'])->name('sections');
-});
+Route::get('/employee/{id}/edit', [UserController::class, 'edit'])->name('employee.edit');
+Route::put('/employee/{id}/update', [UserController::class, 'update'])->name('employee.update');
+Route::get('/employee/sections', [UserController::class, 'getSections'])->name('employee.sections');
 
-//Position
+
 Route::prefix('planning/position')->group(function () {
   Route::get('/', [App\Http\Controllers\Planning\PositionController::class, 'index'])->name('position.index');
   Route::post('/store', [App\Http\Controllers\Planning\PositionController::class, 'store'])->name('position.store');
@@ -240,17 +196,7 @@ Route::prefix('planning/position')->group(function () {
   Route::post('/{id}/delete', [App\Http\Controllers\Planning\PositionController::class, 'destroy'])->name('position.delete');
 });
 
-// Requirements
-Route::get('planning/position/{id}/requirements', [App\Http\Controllers\Planning\PositionController::class, 'getRequirements']);
-Route::post('planning/position/{id}/requirements/store', [App\Http\Controllers\Planning\PositionController::class, 'storeRequirement']);
-Route::post('planning/requirements/{id}/delete', [App\Http\Controllers\Planning\PositionController::class, 'deleteRequirement']);
 
-// Qualifications
-Route::get('planning/position/{id}/qualifications', [App\Http\Controllers\Planning\PositionController::class, 'getQualifications']);
-Route::post('planning/position/{id}/qualifications/store', [App\Http\Controllers\Planning\PositionController::class, 'storeQualification']);
-Route::post('planning/qualifications/{id}/delete', [App\Http\Controllers\Planning\PositionController::class, 'deleteQualification']);
-
-//Position Level
 Route::prefix('/planning/position-level')->group(function () {
   Route::get('/', [PositionLevelController::class, 'index'])->name('position-level.index');
   Route::post('/store', [PositionLevelController::class, 'store'])->name('position-level.store');
@@ -295,8 +241,6 @@ Route::prefix('planning')->name('planning.')->group(function () {
   Route::patch('jo-requests/{joRequest}/disapprove', [JoRequestController::class, 'disapprove'])->name('jo-requests.disapprove');
   Route::get('jo-requests/{joRequest}/print', [JoRequestController::class, 'print'])->name('jo-requests.print');
 });
-
-//-------------------------------------------------------END OF PLANNING-----------------------------------------------------------
 
 
 //PAS

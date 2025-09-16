@@ -2,6 +2,10 @@
 
 namespace App\Http\Controllers\Api;
 
+<<<<<<< HEAD
+=======
+use App\Models\ImportLog;
+>>>>>>> 0e57ff6763065cde4a2848afa77bb55a8d7144da
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
@@ -15,8 +19,9 @@ use App\Imports\EmployeesImport;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\DB; // <-- Add this
 
-class UserController extends Controller
+  class UserController extends Controller
 {
+  
   public function index(Request $request)
   {
     $query = User::with([
@@ -36,9 +41,10 @@ class UserController extends Controller
     return response()->json($query->get());
   }
 
-  public function store(Request $request)
-  {
+    public function store(Request $request)
+{
     $request->validate([
+<<<<<<< HEAD
       'first_name'         => 'required',
       'last_name'          => 'required',
       'employment_status'  => 'required|exists:employment_statuses,id',
@@ -47,6 +53,16 @@ class UserController extends Controller
       'email'              => 'required|email|unique:users,email',
       'password'           => 'required|confirmed|min:6',
       'profile_image'      => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+=======
+        'first_name' => 'required',
+        'last_name' => 'required',
+        'employment_status' => 'required|exists:employment_statuses,id',
+        'division' => 'required|exists:divisions,id',
+        'section' => 'required|exists:sections,id',
+        'email' => 'required|email|unique:users,email',
+        'password' => 'required|confirmed|min:6',
+        'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+>>>>>>> 0e57ff6763065cde4a2848afa77bb55a8d7144da
     ]);
 
     // Auto-generate employee ID
@@ -61,6 +77,7 @@ class UserController extends Controller
     // Save profile image if present
     $imagePath = null;
     if ($request->hasFile('profile_image')) {
+<<<<<<< HEAD
       $file = $request->file('profile_image');
       $filename = time() . '_' . $file->getClientOriginalName();
       $file->move(public_path('uploads/profile_images'), $filename);
@@ -80,10 +97,32 @@ class UserController extends Controller
       'email'                => $request->email,
       'password'             => Hash::make($request->password),
       'profile_image'        => $imagePath,
+=======
+        $file = $request->file('profile_image');
+        $filename = time() . '_' . $file->getClientOriginalName();
+        $file->move(public_path('uploads/profile_images'), $filename);
+        $imagePath = 'uploads/profile_images/' . $filename;
+    }
+
+    User::create([
+        'employee_id' => $employeeId,
+        'first_name' => $request->first_name,
+        'middle_name' => $request->middle_name,
+        'last_name' => $request->last_name,
+        'extension_name' => $request->extension_name,
+        'employment_status_id' => $request->employment_status,
+        'division_id' => $request->division,
+        'section_id' => $request->section,
+        'username' => $username,
+        'email' => $request->email,
+        'password' => Hash::make($request->password),
+        'profile_image' => $imagePath, // save path to DB
+>>>>>>> 0e57ff6763065cde4a2848afa77bb55a8d7144da
     ]);
 
     return redirect()->route('employee.registration-form')->with('success', 'Employee registered successfully!');
-  }
+}
+
 
   public function show($id)
   {
@@ -93,7 +132,12 @@ class UserController extends Controller
 
   public function showEmployeeView($id)
   {
+<<<<<<< HEAD
     $employee = User::with(['division', 'section', 'employmentStatus'])->findOrFail($id);
+=======
+
+    $employee = User::with (['division', 'section', 'employmentStatus']) ->findOrfail($id);
+>>>>>>> 0e57ff6763065cde4a2848afa77bb55a8d7144da
     return view('content.planning.view-employee', compact('employee'));
   }
 
@@ -149,17 +193,29 @@ class UserController extends Controller
 
     return response()->json($employees);
   }
+<<<<<<< HEAD
 
   public function showEmpProfile()
   {
     $user = auth()->user();
     if (!$user) {
       return redirect()->route('login')->with('error', 'Please login first.');
+=======
+public function showEmpProfile()
+{
+    $user = auth()->user();
+    if (!$user) {
+        return redirect()->route('login')->with('error', 'Please login first.');
+>>>>>>> 0e57ff6763065cde4a2848afa77bb55a8d7144da
     }
 
     $employee = $user->load(['division', 'section', 'employmentStatus']);
     return view('content.planning.profile.basic-information', compact('employee'));
+<<<<<<< HEAD
   }
+=======
+}
+>>>>>>> 0e57ff6763065cde4a2848afa77bb55a8d7144da
 
   public function editEmployeeView($id)
   {
@@ -174,6 +230,7 @@ class UserController extends Controller
   }
 
   public function getSections(Request $request)
+<<<<<<< HEAD
   {
     $divisionId = $request->division_id;
 
@@ -186,11 +243,25 @@ class UserController extends Controller
   }
 
   public function create()
+=======
+>>>>>>> 0e57ff6763065cde4a2848afa77bb55a8d7144da
   {
+      $divisionId = $request->division_id;
+
+      if (!$divisionId) {
+          return response()->json([]);
+      }
+
+      $sections = Section::where('division_id', $divisionId)->get(['id', 'name']);
+      return response()->json($sections);
+  }
+    public function create()
+{
     $employmentStatuses = EmploymentStatus::all();
     $divisions = Division::all();
 
     do {
+<<<<<<< HEAD
       $latestUser = User::latest('id')->first();
       $latestId = $latestUser ? $latestUser->id + 1 : 1;
       $generatedEmployeeId = '11-' . str_pad($latestId, 4, '0', STR_PAD_LEFT);
@@ -212,6 +283,27 @@ class UserController extends Controller
   {
     $request->validate([
       'file' => 'required|mimes:xlsx,xls,csv',
+=======
+    $latestUser = User::latest('id')->first();
+    $latestId = $latestUser ? $latestUser->id + 1 : 1;
+    $generatedEmployeeId = '11-' . str_pad($latestId, 4, '0', STR_PAD_LEFT);
+    } while (User::where('employee_id', $generatedEmployeeId)->exists());
+
+    return view('content.planning.registration-form', compact(
+        'employmentStatuses',
+        'divisions',
+        'generatedEmployeeId'
+    ));
+}
+    public function showImportForm()
+    {
+        return view('content.planning.import-form');
+    }
+    public function importEmployees(Request $request)
+{
+    $request->validate([
+        'file' => 'required|mimes:xlsx,xls,csv',
+>>>>>>> 0e57ff6763065cde4a2848afa77bb55a8d7144da
     ]);
 
     $file = $request->file('file');
@@ -219,11 +311,40 @@ class UserController extends Controller
 
     // Check if file already imported
     if (ImportLog::where('filename', $filename)->exists()) {
+<<<<<<< HEAD
       return redirect()->back()->with('error', 'This file has already been imported.');
     }
 
     try {
       Excel::import(new EmployeesImport(), $file);
+=======
+        return redirect()->back()->with('error', 'This file has already been imported.');
+    }
+
+    try {
+        Excel::import(new EmployeesImport(), $file);
+
+        // Log success
+        ImportLog::create([
+            'filename'    => $filename,
+            'status'      => 'Imported',
+            'imported_at' => now(),
+        ]);
+
+        return redirect()->back()->with('success', 'Employees imported successfully!');
+    } catch (\Exception $e) {
+        // Log failure
+        ImportLog::create([
+            'filename'    => $filename,
+            'status'      => 'Failed: ' . $e->getMessage(),
+            'imported_at' => now(),
+        ]);
+
+        return redirect()->back()->with('error', 'Import failed: ' . $e->getMessage());
+    }
+    
+}
+>>>>>>> 0e57ff6763065cde4a2848afa77bb55a8d7144da
 
       ImportLog::create([
         'filename'    => $filename,

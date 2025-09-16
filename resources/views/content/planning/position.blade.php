@@ -21,6 +21,10 @@
           <tr>
             <th>No.</th>
             <th>Position Name</th>
+            <th>Abbreviation</th>
+            <th>Item No</th>
+            <th>Salary Grade</th>
+            <th>Employment Status</th>
             <th>Status</th>
             <th>Action</th>
           </tr>
@@ -30,13 +34,22 @@
           <tr data-id="{{ $position->id }}">
             <td>{{ $index + 1 }}</td>
             <td>{{ $position->position_name }}</td>
+            <td>{{ $position->abbreviation }}</td>
+            <td>{{ $position->item_no }}</td>
+            <td>{{ $position->salaryGrade->sg_num ?? '' }}</td>
+            <td>{{ $position->employmentStatus->name ?? '' }}</td>
             <td>{{ ucfirst($position->status) }}</td>
             <td class="text-nowrap">
               <div class="d-inline-flex gap-1">
+
+                {{-- Edit button --}}
                 <button class="btn btn-sm btn-primary edit-btn"
                   data-id="{{ $position->id }}"
-                  data-position-name="{{ $position->position_name }}"
+                  data-position_name="{{ $position->position_name }}"
                   data-abbreviation="{{ $position->abbreviation }}"
+                  data-item_no="{{ $position->item_no }}"
+                  data-salary_grade_id="{{ $position->salary_grade_id }}"
+                  data-employment_status_id="{{ $position->employment_status_id }}"
                   data-status="{{ $position->status }}">
                   Edit
                 </button>
@@ -53,70 +66,32 @@
                   Qualifications
                 </button>
 
+                {{-- Add Requirements button --}}
+                <button class="btn btn-sm btn-warning requirements-btn"
+                  data-id="{{ $position->id }}">
+                  Requirements
+                </button>
+
+                {{-- Add Qualifications button --}}
+                <button class="btn btn-sm btn-success add-qual-btn"
+                  data-id="{{ $position->id }}">
+                  Qualifications
+                </button>
+
+                {{-- Delete button --}}
                 <button class="btn btn-sm btn-danger delete-btn"
                   data-id="{{ $position->id }}">
                   Delete
                 </button>
+
               </div>
             </td>
 
           </tr>
           @endforeach
         </tbody>
+
       </table>
-    </div>
-  </div>
-</div>
-
-<!-- Requirements & Qualifications Modal -->
-<div class="modal fade" id="reqModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <h5 class="modal-title m-3">
-        Manage Requirements & Qualifications for <span id="reqPositionName"></span>
-      </h5>
-      <form id="reqForm">
-        <input type="hidden" name="position_id" id="reqPositionId">
-        <div class="modal-body">
-          <div class="mb-3">
-            <label>Requirement / Qualification</label>
-            <input type="text" name="requirement" id="requirement" class="form-control" placeholder="Enter requirement/qualification">
-          </div>
-          <button type="button" id="addRequirementBtn" class="btn btn-success mb-3">+ Add</button>
-
-          <ul class="list-group" id="requirementsList">
-            <!-- Dynamically loaded -->
-          </ul>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
-<!-- Qualifications Modal -->
-<div class="modal fade" id="qualModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <h5 class="modal-title m-3">
-        Manage Qualifications for <span id="qualPositionName"></span>
-      </h5>
-      <form id="qualForm">
-        <input type="hidden" name="position_id" id="qualPositionId">
-        <div class="modal-body">
-          <div class="mb-3">
-            <label>Qualification</label>
-            <input type="text" name="qualification" id="qualification" class="form-control" placeholder="Enter qualification">
-          </div>
-          <button type="button" id="addQualificationBtn" class="btn btn-success mb-3">+ Add Qualification</button>
-
-          <ul class="list-group" id="qualificationsList"></ul>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        </div>
-      </form>
     </div>
   </div>
 </div>
@@ -348,5 +323,188 @@
 
 
   $('#positionTable').DataTable();
+</script>
+<script>
+  $(document).ready(function() {
+    let currentPositionId = null;
+
+    // Open modal and load requirements
+    $(document).on('click', '.requirements-btn', function() {
+      currentPositionId = $(this).data('id');
+      $('#requirementsModal').modal('show');
+      loadRequirements(currentPositionId);
+    });
+
+    // Load requirements
+    function loadRequirements(positionId) {
+      $.get(`/requirements/position/${positionId}`, function(data) {
+        let rows = '';
+        data.requirements.forEach(req => {
+          rows += `
+        <tr data-id="${req.id}">
+          <td width="70%">
+            <input type="text" class="form-control requirement-input" value="${req.requirement}">
+          </td>
+       <td>
+      <button class="btn btn-sm btn-primary save-req" title="Update">
+        <i class="fas fa-save">Update</i>
+      </button>
+      <button class="btn btn-sm btn-danger delete-req" title="Delete">
+        <i class="bi bi-trash">Remove</i>
+      </button>
+    </td>
+        </tr>
+      `;
+        });
+        $('#requirementsList').html(rows);
+      });
+    }
+
+    // Add requirement
+    $('#addRequirementBtn').click(function() {
+      const newReq = $('#newRequirement').val();
+      if (!newReq) return alert("Enter a requirement");
+
+      $.ajax({
+        url: `/requirements/store/${currentPositionId}`,
+        method: "POST",
+        data: {
+          requirement: [newReq],
+          _token: "{{ csrf_token() }}"
+        },
+        success: function() {
+          $('#newRequirement').val('');
+          loadRequirements(currentPositionId);
+        }
+      });
+    });
+
+    // Save edited requirement
+    $(document).on('click', '.save-req', function() {
+      const row = $(this).closest('tr');
+      const id = row.data('id');
+      const value = row.find('.requirement-input').val();
+
+      $.ajax({
+        url: `/requirements/${id}`,
+        method: "PUT",
+        data: {
+          requirement: value,
+          _token: "{{ csrf_token() }}"
+        },
+        success: function() {
+          loadRequirements(currentPositionId);
+        }
+      });
+    });
+
+    // Delete requirement
+    $(document).on('click', '.delete-req', function() {
+      const id = $(this).closest('tr').data('id');
+      if (!confirm("Delete this requirement?")) return;
+
+      $.ajax({
+        url: `/requirements/${id}`,
+        method: "DELETE",
+        data: {
+          _token: "{{ csrf_token() }}"
+        },
+        success: function() {
+          loadRequirements(currentPositionId);
+        }
+      });
+    });
+  });
+</script>
+<script>
+  $(document).ready(function() {
+    let currentPositionId = null;
+
+    // Open modal for qualifications
+    $(document).on('click', '.add-qual-btn', function() {
+      currentPositionId = $(this).data('id');
+      $('#qualificationsModal').modal('show');
+      loadQualifications(currentPositionId);
+    });
+
+    // Load qualifications
+    function loadQualifications(positionId) {
+      $.get(`/qualifications/position/${positionId}`, function(data) {
+        let rows = '';
+        data.qualifications.forEach(q => {
+          rows += `
+          <tr data-id="${q.id}">
+            <td>
+              <input type="text" class="form-control qualification-input" value="${q.title}">
+            </td>
+            <td>
+              <button class="btn btn-sm btn-primary save-qual" title="Update">
+                <i class="bi bi-save"></i>
+              </button>
+              <button class="btn btn-sm btn-danger delete-qual" title="Delete">
+                <i class="bi bi-trash"></i>
+              </button>
+            </td>
+          </tr>
+        `;
+        });
+        $('#qualificationsList').html(rows);
+      });
+    }
+
+    // Add qualification
+    $('#addQualificationBtn').click(function() {
+      const newQ = $('#newQualification').val();
+      if (!newQ) return alert("Enter a qualification");
+      $.ajax({
+        url: `/qualifications/store/${currentPositionId}`,
+        method: "POST",
+        data: {
+          qualification: [newQ],
+          _token: "{{ csrf_token() }}"
+        },
+        success: function() {
+          $('#newQualification').val('');
+          loadQualifications(currentPositionId);
+        }
+      });
+    });
+
+    // Save edited qualification
+    $(document).on('click', '.save-qual', function() {
+      const row = $(this).closest('tr');
+      const id = row.data('id');
+      const value = row.find('.qualification-input').val();
+
+      $.ajax({
+        url: `/qualifications/${id}`,
+        method: "PUT",
+        data: {
+          qualification: value,
+          _token: "{{ csrf_token() }}"
+        },
+        success: function() {
+          loadQualifications(currentPositionId);
+        }
+      });
+    });
+
+    // Delete qualification
+    $(document).on('click', '.delete-qual', function() {
+      const id = $(this).closest('tr').data('id');
+      if (!confirm("Delete this qualification?")) return;
+
+      $.ajax({
+        url: `/qualifications/${id}`,
+        method: "DELETE",
+        data: {
+          _token: "{{ csrf_token() }}"
+        },
+        success: function() {
+          loadQualifications(currentPositionId);
+        }
+      });
+    });
+  });
 </script>
 @endpush

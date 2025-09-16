@@ -12,6 +12,9 @@ class Position extends Model
   protected $fillable = [
     'position_name',
     'abbreviation',
+    'item_no',
+    'salary_grade_id',
+    'employment_status_id',
     'status',
   ];
 
@@ -40,14 +43,8 @@ class Position extends Model
   {
     return $this->belongsTo(PositionLevel::class);
   }
-
-  public function requirements()
-  {
-    return $this->hasMany(Requirement::class);
-  }
-
   public function qualifications()
   {
-    return $this->hasMany(Qualification::class);
+    return $this->belongsToMany(Qualification::class, 'position_qualification');
   }
 }
