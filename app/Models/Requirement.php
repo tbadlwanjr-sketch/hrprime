@@ -5,11 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Qualification extends Model
+class Requirement extends Model
 {
   use HasFactory;
 
-  protected $fillable = ['position_id', 'title']; // ✅ match controller
+  protected $fillable = [
+    'position_id',
+    'requirement',
+  ];
 
   public function position()
   {

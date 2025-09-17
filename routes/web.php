@@ -67,14 +67,11 @@ use App\Http\Controllers\planning\UnitController;
 use App\Http\Controllers\planning\SectionController;
 use App\Http\Controllers\Planning\EmploymentStatusController;
 use App\Http\Controllers\Planning\OfficeLocationController;
-use App\Http\Controllers\Planning\QualificationController ;
 use App\Http\Controllers\Planning\SalaryGradeController;
 use App\Http\Controllers\Planning\PositionLevelController;
 use App\Http\Controllers\Planning\ParentheticalTitleController;
 use App\Http\Controllers\Planning\ReportController;
 use App\Http\Controllers\Planning\JoRequestController;
-use App\Http\Controllers\Planning\FamilyBackgroundController;
-
 //PAS
 use App\Http\Controllers\pas\FundSourceController;
 use App\Http\Controllers\pas\PayrollController;
@@ -99,23 +96,22 @@ Route::get('/dashboard/dashboards-analytics', [Analytics::class, 'index'])->name
 //-------------------------------------------------------START OF PLANNING-----------------------------------------------------------
 
 Route::prefix('planning')->group(function () {
-    Route::get('/list-of-employee', [UserController::class, 'index'])->name('planning.list-of-employee');
-    Route::get('/import-form', [UserController::class, 'showImportForm'])->name('planning.import-form');
-    Route::post('/import', [UserController::class, 'importEmployees'])->name('planning.import');});
+  Route::get('/list-of-employee', [UserController::class, 'index'])->name('planning.list-of-employee');
+  Route::get('/import-form', [UserController::class, 'showImportForm'])->name('planning.import-form');
+  Route::post('/import', [UserController::class, 'importEmployees'])->name('planning.import');
+});
 
 Route::get('/planning/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
 // Registration Form Routes
 Route::prefix('planning')->group(function () {
     Route::get('/registration-form', [RegistrationForm::class, 'index'])->name('registration-form.index');
-    Route::post('/list-of-employee', [UserController::class, 'store'])->name('employee.store');
-});
-
-// Show Registration Form (from API\UserController)
+    Route::post('/planning/list-of-employee', [UserController::class, 'store'])->name('employee.store');});
 Route::get('/planning/registration-form', [\App\Http\Controllers\Api\UserController::class, 'create'])->name('employee.registration-form');
-Route::get('/planning/section', [UserController::class, 'getSections'])->name('planning.section');
+
+
+
     
-// Employee List & Profile Routes
 Route::get('/planning/list-of-employee', [UserController::class, 'bladeIndex'])->name('employee.view-blade');
 Route::get('/planning/list-of-employee/{id}/view', [UserController::class, 'showEmployeeView'])->name('employee.show-view');
 Route::get('/planning/list-of-employee/{id}', [UserController::class, 'show'])->name('employee.view');
@@ -125,57 +121,34 @@ Route::get('/planning/active-employees', [\App\Http\Controllers\Planning\UserCon
 Route::get('/planning/retired-employees', [\App\Http\Controllers\Planning\UserController::class, 'retired'])->name('employee.retired');
 Route::get('/planning/resigned-employees', [\App\Http\Controllers\Planning\UserController::class, 'resigned'])->name('employee.resigned');
 
-// Import Employees
-Route::prefix('planning')->name('planning.')->group(function () {
-    Route::get('/import-form', [\App\Http\Controllers\Api\UserController::class, 'showImportForm'])->name('import-form');
-    Route::post('/import', [\App\Http\Controllers\Api\UserController::class, 'importEmployees'])->name('import');});
-
-// User Profile
-  // basic information
-  Route::get('/planning/profile/basic-information', [\App\Http\Controllers\Api\UserController::class, 'showEmpProfile'])->name('employee.basic-information');
-    Route::post('/employee/update-basic-info/{id}', [EmployeeController::class, 'updateBasicInfo'])->name('employee.updateBasicInfo');
-
-  // family background
-    Route::prefix('planning/profile')->group(function () {
-        Route::get('/family-background', [FamilyBackgroundController::class, 'create'])
-            ->name('planning.profile.family-background.create');
-
-        Route::post('/family-background', [FamilyBackgroundController::class, 'store'])
-            ->name('planning.profile.family-background.store');
-    });
-
-Route::prefix('planning/applicants')->name('applicants.')->group(function () {
-    Route::get('/', [ApplicantController::class, 'index'])->name('index');
-    Route::post('/store', [ApplicantController::class, 'store'])->name('store');
-    Route::post('/{id}/update', [ApplicantController::class, 'update'])->name('update');
-    Route::post('/{id}/archive', [ApplicantController::class, 'archive'])
-    ->name('archive');
-    Route::get('/next-number', [ApplicantController::class, 'nextApplicantNumber']);
-
+//import
+Route::prefix('planning')->group(function () {
+    Route::get('/import-form', [\App\Http\Controllers\Api\UserController::class, 'showImportForm'])->name('planning.import-form');
+    Route::post('/import', [\App\Http\Controllers\Api\UserController::class, 'importEmployees'])->name('planning.import');
 });
 
-// Division Management
-Route::prefix('planning/division')->name('division.')->group(function () {
-    Route::get('/', [DivisionController::class, 'index'])->name('index');
-    Route::post('/store', [DivisionController::class, 'store'])->name('store');
-    Route::post('/{id}/update', [DivisionController::class, 'update'])->name('update');
-    Route::post('/{id}/delete', [DivisionController::class, 'destroy'])->name('delete');});
+Route::prefix('/planning/division')->group(function () {
+  Route::get('/', [DivisionController::class, 'index'])->name('division.index');
+  Route::post('/store', [DivisionController::class, 'store'])->name('division.store');
+  Route::post('/{id}/update', [DivisionController::class, 'update'])->name('division.update');
+  Route::post('/{id}/delete', [DivisionController::class, 'destroy'])->name('division.delete');
+});
 
 //Section Management
 Route::prefix('/planning/section')->group(function () {
   Route::get('/', [SectionController::class, 'index'])->name('section.index');
   Route::post('/store', [SectionController::class, 'store'])->name('section.store');
   Route::post('/{id}/update', [SectionController::class, 'update'])->name('section.update');
-  Route::post('/{id}/delete', [SectionController::class, 'destroy'])->name('section.delete');});
-  
+  Route::post('/{id}/delete', [SectionController::class, 'destroy'])->name('section.delete');
+});
 
-//Unit Management
 Route::prefix('planning/unit')->name('unit.')->group(function () {
     Route::get('/', [UnitController::class, 'index'])->name('index');
     Route::post('/', [UnitController::class, 'store'])->name('store');
     Route::put('/{id}', [UnitController::class, 'update'])->name('update');
     Route::delete('/{id}', [UnitController::class, 'destroy'])->name('destroy');
-    Route::get('/sections/by-division/{id}', [UnitController::class, 'getSectionsByDivision']);});
+    Route::get('/sections/by-division/{id}', [UnitController::class, 'getSectionsByDivision']);
+});
 
 //Employment Status
 Route::prefix('/planning/employment-status')->group(function () {
@@ -184,34 +157,30 @@ Route::prefix('/planning/employment-status')->group(function () {
   Route::post('/{id}/update', [EmploymentStatusController::class, 'update'])->name('employment-status.update');
   Route::post('/{id}/delete', [EmploymentStatusController::class, 'destroy'])->name('employment-status.delete');});
 
-//Office Location  
 Route::prefix('/planning/office-location')->group(function () {
   Route::get('/', [OfficeLocationController::class, 'index'])->name('office-location.index');
   Route::post('/store', [OfficeLocationController::class, 'store'])->name('office-location.store');
   Route::post('/{id}/update', [OfficeLocationController::class, 'update'])->name('office-location.update');
   Route::post('/{id}/delete', [OfficeLocationController::class, 'destroy'])->name('office-location.delete');});
 
-//Qualification  
 Route::prefix('planning/qualification')->name('qualifications.')->group(function () {
     Route::get('/', [QualificationController::class, 'index'])->name('index');
     Route::post('/', [QualificationController::class, 'store'])->name('store');
     Route::put('/{id}', [QualificationController::class, 'update'])->name('update');
-    Route::delete('/{id}', [QualificationController::class, 'destroy'])->name('destroy');});
+    Route::delete('/{id}', [QualificationController::class, 'destroy'])->name('destroy');
+});
 
-//Salary Grade
 Route::prefix('/planning/salary-grade')->group(function () {
   Route::get('/', [SalaryGradeController::class, 'index'])->name('salary-grade.index');
   Route::post('/store', [SalaryGradeController::class, 'store'])->name('salary-grade.store');
   Route::post('/{id}/update', [SalaryGradeController::class, 'update'])->name('salary-grade.update');
   Route::post('/{id}/delete', [SalaryGradeController::class, 'destroy'])->name('salary-grade.delete');});
 
-// Employee Management
-Route::prefix('employee')->name('employee.')->group(function () {
-    Route::get('{id}/edit', [UserController::class, 'edit'])->name('edit');
-    Route::put('{id}/update', [UserController::class, 'update'])->name('update');
-    Route::get('sections', [UserController::class, 'getSections'])->name('sections');});
+Route::get('/employee/{id}/edit', [UserController::class, 'edit'])->name('employee.edit');
+Route::put('/employee/{id}/update', [UserController::class, 'update'])->name('employee.update');
+Route::get('/employee/sections', [UserController::class, 'getSections'])->name('employee.sections');
 
-//Position
+
 Route::prefix('planning/position')->group(function () {
   Route::get('/', [App\Http\Controllers\Planning\PositionController::class, 'index'])->name('position.index');
   Route::post('/store', [App\Http\Controllers\Planning\PositionController::class, 'store'])->name('position.store');
@@ -223,15 +192,16 @@ Route::prefix('/planning/position-level')->group(function () {
   Route::get('/', [PositionLevelController::class, 'index'])->name('position-level.index');
   Route::post('/store', [PositionLevelController::class, 'store'])->name('position-level.store');
   Route::post('/{id}/update', [PositionLevelController::class, 'update'])->name('position-level.update');
-  Route::post('/{id}/delete', [PositionLevelController::class, 'destroy'])->name('position-level.delete');});
+  Route::post('/{id}/delete', [PositionLevelController::class, 'destroy'])->name('position-level.delete');
+  
+});
 
-  //Parenthetical Title
 Route::prefix('/planning/parenthetical-title')->group(function () {
   Route::get('/', [ParentheticalTitleController::class, 'index'])->name('parenthetical-title.index');
   Route::post('/store', [ParentheticalTitleController::class, 'store'])->name('parenthetical-title.store');
   Route::post('/{id}/update', [ParentheticalTitleController::class, 'update'])->name('parenthetical-title.update');
-  Route::post('/{id}/delete', [ParentheticalTitleController::class, 'destroy'])->name('parenthetical-title.delete');});
-
+  Route::post('/{id}/delete', [ParentheticalTitleController::class, 'destroy'])->name('parenthetical-title.delete');
+});
 //vacant position 
 Route::get('/planning/vacant-position', [VacantPositionController::class, 'index'])->name('vacant.position');
 Route::post('/planning/vacant-positions/store', [VacantPositionController::class, 'store'])->name('vacant.positions.store');
@@ -246,8 +216,9 @@ Route::prefix('/planning/list-of-employee')->name('employee.')->group(function (
 
 // Report Generation
 Route::prefix('planning')->group(function () {
-    Route::get('/reports', [ReportController::class, 'index'])->name('planning.reports');
-    Route::get('/reports/export', [ReportController::class, 'export'])->name('planning.reports.export');});
+  Route::get('/report', [ReportController::class, 'index'])->name('planning.reports');
+});
+Route::get('/reports/export', [ReportController::class, 'export'])->name('planning.reports.export');
 
 //Jo Requests
 Route::prefix('planning')->name('planning.')->group(function () {
@@ -259,8 +230,6 @@ Route::prefix('planning')->name('planning.')->group(function () {
   Route::patch('jo-requests/{joRequest}/disapprove', [JoRequestController::class, 'disapprove'])->name('jo-requests.disapprove');
   Route::get('jo-requests/{joRequest}/print', [JoRequestController::class, 'print'])->name('jo-requests.print');
 });
-
-//-------------------------------------------------------END OF PLANNING-----------------------------------------------------------
 
 
 //PAS
