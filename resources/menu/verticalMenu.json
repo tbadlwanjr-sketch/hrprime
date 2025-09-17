@@ -177,6 +177,11 @@
           "slug": "vacant-position"
         },
         {
+          "url": "planning/applicants",
+          "name": "Applicants",
+          "slug": "applicants"
+        },
+        {
           "url": "planning/employment-status",
           "name": "Employment Status",
           "slug": "employment-status"
@@ -192,18 +197,7 @@
           "slug": "salary-grade"
         }
       ]
-    },
-    {
-      "url": "planning/jo-requests",
-      "name": "Requests",
-      "slug": "jo_requests"
-    },
-    {
-      "url": "planning/report",
-      "name": "Reports",
-      "slug": "report"
     }
-    
   ]
 },
     {

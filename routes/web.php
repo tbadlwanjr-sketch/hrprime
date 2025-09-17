@@ -57,6 +57,7 @@ use App\Http\Controllers\learning\ScholarshipController;
 //Planning
 use App\Http\Controllers\planning\DashboardController;
 use App\Http\Controllers\planning\ListofEmployee;
+use App\Http\Controllers\Planning\ApplicantController;
 use App\Http\Controllers\planning\RegistrationForm;
 use App\Http\Controllers\planning\ListofPosition;
 use App\Http\Controllers\planning\VacantPositionController;
@@ -72,7 +73,7 @@ use App\Http\Controllers\Planning\PositionLevelController;
 use App\Http\Controllers\Planning\ParentheticalTitleController;
 use App\Http\Controllers\Planning\ReportController;
 use App\Http\Controllers\Planning\JoRequestController;
-
+use App\Http\Controllers\Planning\FamilyBackgroundController;
 
 //PAS
 use App\Http\Controllers\pas\FundSourceController;
@@ -131,8 +132,27 @@ Route::prefix('planning')->name('planning.')->group(function () {
 
 // User Profile
   // basic information
-Route::get('/planning/profile/basic-information', [\App\Http\Controllers\Api\UserController::class, 'showEmpProfile'])->name('employee.basic-information');
+  Route::get('/planning/profile/basic-information', [\App\Http\Controllers\Api\UserController::class, 'showEmpProfile'])->name('employee.basic-information');
     Route::post('/employee/update-basic-info/{id}', [EmployeeController::class, 'updateBasicInfo'])->name('employee.updateBasicInfo');
+
+  // family background
+    Route::prefix('planning/profile')->group(function () {
+        Route::get('/family-background', [FamilyBackgroundController::class, 'create'])
+            ->name('planning.profile.family-background.create');
+
+        Route::post('/family-background', [FamilyBackgroundController::class, 'store'])
+            ->name('planning.profile.family-background.store');
+    });
+
+Route::prefix('planning/applicants')->name('applicants.')->group(function () {
+    Route::get('/', [ApplicantController::class, 'index'])->name('index');
+    Route::post('/store', [ApplicantController::class, 'store'])->name('store');
+    Route::post('/{id}/update', [ApplicantController::class, 'update'])->name('update');
+    Route::post('/{id}/archive', [ApplicantController::class, 'archive'])
+    ->name('archive');
+    Route::get('/next-number', [ApplicantController::class, 'nextApplicantNumber']);
+
+});
 
 // Division Management
 Route::prefix('planning/division')->name('division.')->group(function () {
