@@ -73,7 +73,7 @@ use App\Http\Controllers\UnfilledPositionsController;
 use App\Http\Controllers\ApplicantController;
 
 
-use App\Http\Controllers\AddressController;
+use App\Http\Controllers\Profile\AddressController;
 
 
 // Login Page

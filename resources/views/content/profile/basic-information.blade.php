@@ -151,7 +151,7 @@
               <input type="text" name="perm_house_no" id="perm_house_no" class="form-control mb-3" value="{{ $employee->perm_house_no ?? '' }}">
 
               <label class="form-label fw-bold">ZIP</label>
-              <input type="text" name="perm_zip" id="perm_zip" class="form-control" value="{{ $employee->perm_zip ?? '' }}">
+              <input type="text" name="perm_zipcode" id="perm_zipcode" class="form-control" value="{{ $employee->perm_zipcode ?? '' }}">
             </div>
 
             {{-- Residence Address --}}
@@ -193,7 +193,7 @@
               <input type="text" name="res_house_no" id="res_house_no" class="form-control mb-3" value="{{ $employee->res_house_no ?? '' }}">
 
               <label class="form-label fw-bold">ZIP</label>
-              <input type="text" name="res_zip" id="res_zip" class="form-control" value="{{ $employee->res_zip ?? '' }}">
+              <input type="text" name="res_zipcode" id="res_zipcode" class="form-control" value="{{ $employee->res_zipcode ?? '' }}">
             </div>
           </div>
 
