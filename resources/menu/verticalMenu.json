@@ -26,6 +26,7 @@
     },
     {
       "name": "User Profile",
+      "icon": "menu-icon tf-icons ri-user-fill",    
       "slug": "profile",
       "roles": [
         "HR-Planning",

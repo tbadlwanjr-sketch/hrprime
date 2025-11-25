@@ -10,66 +10,172 @@ use Illuminate\Http\Request;
 
 class User extends Authenticatable
 {
-  use HasFactory, Notifiable;
+    use HasFactory, Notifiable;
 
-  protected $fillable = [
-    'employee_id',
-    'first_name',
-    'middle_name',
-    'last_name',
-    'extension_name',
-    'employment_status_id',
-    'division_id',
-    'section_id',
-    'username',
-    'email',
-    'password',
-    'gender',
-    'role', // ✅ add this line
-  ];
+    protected $fillable = [
+        'employee_id',
+        'first_name',
+        'middle_name',
+        'last_name',
+        'extension_name',
+        'employment_status_id',
+        'division_id',
+        'section_id',
+        'username',
+        'email',
+        'password',
+        'gender',
+        'role',
+        
+        
 
-  protected $hidden = [
-    'password',
-  ];
+        // ✅ Permanent address fields
+        'perm_region',
+        'perm_province',
+        'perm_city',
+        'perm_barangay',
 
-  public function division()
-  {
-    return $this->belongsTo(Division::class);
-  }
+        // ✅ Residential address fields
+        'res_region',
+        'res_province',
+        'res_city',
+        'res_barangay',
+    ];
 
-  public function section()
-  {
-    return $this->belongsTo(Section::class);
-  }
-  public function getSections(Request $request)
-  {
-    $divisionId = $request->division_id;
+    protected $hidden = [
+        'password',
+    ];
 
-    if (!$divisionId) {
-      return response()->json([]);
+    public function division()
+    {
+        return $this->belongsTo(Division::class);
     }
 
-    $sections = Section::where('division_id', $divisionId)->get(['id', 'name']); // or ['id', 'abbreviation'] if you're using abbreviations
+    public function section()
+    {
+        return $this->belongsTo(Section::class);
+    }
 
-    return response()->json($sections);
-  }
-  public function employmentStatus()
-  {
-    return $this->belongsTo(EmploymentStatus::class, 'employment_status_id');
-  }
+    public function getSections(Request $request)
+    {
+        $divisionId = $request->division_id;
 
-  // public function qualification()
-  // {
-  //   return $this->belongsTo(Qualification::class);
-  // }
-  public function model(array $row)
-  {
-    // Dump the row to test if import reads it
-    Log::info('IMPORTING ROW: ', $row);
+        if (!$divisionId) {
+            return response()->json([]);
+        }
 
-    if (strtolower($row[0]) === 'username') return null;
+        $sections = Section::where('division_id', $divisionId)
+            ->get(['id', 'name']);
 
-    // ... rest of logic
-  }
-  
+        return response()->json($sections);
+    }
+
+    public function employmentStatus()
+    {
+        return $this->belongsTo(EmploymentStatus::class, 'employment_status_id');
+    }
+
+    public function model(array $row)
+    {
+        Log::info('IMPORTING ROW: ', $row);
+        if (strtolower($row[0]) === 'username') return null;
+    }
+
+    // ✅ Permanent address relationships
+    public function permRegion()
+    {
+        return $this->belongsTo(Region::class, 'perm_region', 'psgc');
+    }
+
+    public function permProvince()
+    {
+        return $this->belongsTo(Province::class, 'perm_province', 'psgc');
+    }
+
+    public function permCity()
+    {
+        return $this->belongsTo(Municipality::class, 'perm_city', 'psgc');
+    }
+
+    public function permBarangay()
+    {
+        return $this->belongsTo(Barangay::class, 'perm_barangay', 'psgc');
+    }
+
+    // ✅ Residential address relationships
+    public function resRegion()
+    {
+        return $this->belongsTo(Region::class, 'res_region', 'psgc');
+    }
+
+    public function resProvince()
+    {
+        return $this->belongsTo(Province::class, 'res_province', 'psgc');
+    }
+
+    public function resCity()
+    {
+        return $this->belongsTo(Municipality::class, 'res_city', 'psgc');
+    }
+
+    public function resBarangay()
+    {
+        return $this->belongsTo(Barangay::class, 'res_barangay', 'psgc');
+    }
+    public function governmentIds()
+    {
+        return $this->hasMany(GovernmentId::class, 'user_id', 'id');
+    }
+    public function familyBackgrounds()
+    {
+        return $this->hasMany(FamilyBackground::class, 'employee_id', 'id');
+    }
+    public function children()
+    {
+        return $this->hasMany(Child::class, 'family_background_id');
+    }
+    public function educations()
+    {
+        return $this->hasMany(Education::class, 'user_id', 'id');
+    }
+    public function csEligibilities()
+    {
+        return $this->hasMany(CsEligibility::class,  'user_id', 'id');
+    }
+
+    public function workExperiences()
+    {
+        return $this->hasMany(WorkExperience::class,  'user_id', 'id');
+    }
+    public function voluntaryWorks()
+    {
+        return $this->hasMany(VoluntaryWork::class,  'user_id', 'id');
+    }
+    public function learningAndDevelopments()
+    {
+        return $this->hasMany(LearningAndDevelopment::class,  'user_id', 'id');
+    }
+    public function skills()
+    {
+        return $this->hasMany(Skill::class,  'user_id', 'id');
+    }
+    public function nonAcademics()
+    {
+        return $this->hasMany(NonAcademic::class,  'user_id', 'id');
+    }
+    public function organizations()
+    {
+        return $this->hasMany(Organization::class,  'user_id', 'id');
+    }
+    public function references()
+    {
+        return $this->hasMany(Reference::class,  'user_id', 'id');
+    }
+    public function otherInformations()
+    {
+        return $this->hasMany(OtherInformation::class,  'user_id', 'id');
+    }
+
+
+
 }

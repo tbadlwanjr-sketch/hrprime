@@ -176,7 +176,9 @@ Route::middleware(['auth'])->group(function () {
     Route::post('profile/government-ids/store', [GovernmentIdController::class, 'store'])->name('profile.government-ids.store');
     Route::put('profile/government-ids/{id}', [GovernmentIdController::class, 'update'])->name('profile.government-ids.update');
     Route::delete('profile/government-ids/{id}', [GovernmentIdController::class, 'destroy'])->name('profile.government-ids.destroy');
+    Route::post('profile/government-ids/update-all', [GovernmentIdController::class, 'updateAll'])->name('profile.government-ids.update-all');
 });
+
 
 Route::middleware(['auth'])->group(function () {
     Route::get('profile/non-academic', [NonAcademicController::class, 'index'])->name('profile.non-academic.index');
@@ -207,7 +209,9 @@ Route::middleware(['auth'])->group(function () {
     Route::post('profile/other-information', [OtherInformationController::class, 'store'])->name('profile.other-information.store');
 });
 
-Route::get('/pds/print', [PdsController::class, 'generate'])->name('pds.print');
+Route::middleware('auth')->get('/pds/fill', [PdsController::class, 'fillPdf'])->name('pds.fill');
+
+
 
 //Address
 //-------------------------------------------------------START OF PLANNING-----------------------------------------------------------
