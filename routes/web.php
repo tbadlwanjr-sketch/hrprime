@@ -671,6 +671,8 @@ Route::middleware(['auth'])->group(function() {
     // Show all CPR requests
     Route::get('/forms/cprrequest', [AuthenticCopyRequestController::class, 'index'])
       ->name('forms.cprrequest');
+    Route::get('/cpr/my-requests', [CprEmployeeController::class, 'getMyRequests'])
+      ->name('cpr.getMyRequests');
 
     // Update the status of a specific request
     Route::post('/forms/cprrequest/{authenticCopyRequest}/update-status', [AuthenticCopyRequestController::class, 'updateStatus'])
