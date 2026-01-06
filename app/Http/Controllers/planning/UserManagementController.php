@@ -9,25 +9,14 @@ use App\Models\Division;
 
 class UserManagementController extends Controller
 {
-   public function index()
-{
-    // Get all divisions
-    $divisions = Division::all();
-    return view('content.planning.user-management', compact('divisions'));
-}
-
-    public function activate(Request $request, $id)
+    // Show User Management Page
+    public function index()
     {
-        $user = User::findOrFail($id);
-        $user->is_active = 1;
-        $user->deactivation_reason = null; // clear previous reason
-        $user->save();
-
-        return response()->json(['success' => 'User has been activated successfully.']);
+        $divisions = Division::all();
+        return view('content.planning.user-management', compact('divisions'));
     }
 
-
-// DataTable list
+    // DataTable AJAX List
     public function list(Request $request)
     {
         if ($request->ajax()) {
@@ -35,27 +24,19 @@ class UserManagementController extends Controller
 
             return datatables()->of($users)
                 ->addIndexColumn()
-                ->addColumn('name', function ($user) {
-                    $fullName = trim(
-                        $user->first_name . ' ' .
-                        ($user->middle_name ? $user->middle_name . ' ' : '') .
-                        $user->last_name .
-                        ($user->extension_name ? ' ' . $user->extension_name : '')
-                    );
-                    return strtoupper($fullName);
-                })
+                ->addColumn('name', fn($user) => strtoupper(trim($user->first_name . ' ' .
+                    ($user->middle_name ? $user->middle_name . ' ' : '') .
+                    $user->last_name .
+                    ($user->extension_name ? ' ' . $user->extension_name : '')
+                )))
                 ->addColumn('division', fn($user) => $user->division?->name ?? '-')
                 ->addColumn('section', fn($user) => $user->section?->name ?? '-')
                 ->addColumn('is_active', fn($user) => $user->is_active ? 'Active' : 'Inactive')
                 ->addColumn('action', function ($user) {
                     $btn  = '<a href="javascript:void(0)" data-id="'.$user->id.'" class="edit btn btn-primary btn-sm">Edit</a> ';
-
-                    if ($user->is_active) {
-                        $btn .= '<a href="javascript:void(0)" data-id="'.$user->id.'" class="toggle-status btn btn-danger btn-sm">Deactivate</a>';
-                    } else {
-                        $btn .= '<a href="javascript:void(0)" data-id="'.$user->id.'" class="toggle-status btn btn-success btn-sm">Activate</a>';
-                    }
-
+                    $btn .= $user->is_active
+                        ? '<a href="javascript:void(0)" data-id="'.$user->id.'" class="toggle-status btn btn-danger btn-sm">Deactivate</a>'
+                        : '<a href="javascript:void(0)" data-id="'.$user->id.'" class="toggle-status btn btn-success btn-sm">Activate</a>';
                     return $btn;
                 })
                 ->rawColumns(['action'])
@@ -63,74 +44,67 @@ class UserManagementController extends Controller
         }
     }
 
-    // AJAX: Get sections for HRMDD division
-    public function getSections($divisionId)
-    {
-        $division = Division::with('sections')->find($divisionId);
-
-
-        $sections = $division->sections->map(fn($s) => [
-            'id' => $s->id,
-            'name' => $s->name,
-        ]);
-
-        return response()->json($sections);
-    }
-
-    // DataTable list
-
+    // Fetch User Data for Edit
     public function edit($id)
     {
         $user = User::findOrFail($id);
         return response()->json($user);
     }
 
-    public function store(Request $request)
-    {
-        $request->validate([
-            'first_name' => 'required',
-            'last_name' => 'required',
-            'division_id' => 'required',
-            'section_id' => 'required',
-        ]);
+    // Update User Division & Section
+    public function update(Request $request, $id)
+{
+    $user = User::findOrFail($id);
 
-        User::create([
-            'first_name' => strtoupper($request->first_name),
-            'middle_name' => strtoupper($request->middle_name),
-            'last_name' => strtoupper($request->last_name),
-            'extension_name' => strtoupper($request->extension_name),
-            'division_id' => $request->division_id,
-            'section_id' => $request->section_id,
-            'is_active' => $request->has('is_active'),
-        ]);
+    $request->validate([
+        'division_id' => 'required',
+        'section_id' => 'required',
+        'is_active' => 'nullable|boolean',
+        'password' => 'nullable|string|min:6',
+    ]);
 
-        return response()->json(['success' => 'User created successfully!']);
+    // Update division, section, and status
+    $user->update([
+        'division_id' => $request->division_id,
+        'section_id' => $request->section_id,
+        'is_active' => $request->has('is_active'),
+    ]);
+
+    // Update password if provided
+    if ($request->filled('password')) {
+        $user->update(['password' => bcrypt($request->password)]);
     }
 
-    public function update(Request $request, $id)
+    // Map section abbreviations to roles
+    $rolesMap = [
+        'HRPPMS'     => 'HR-PLANNING',
+        'HR-PAS'     => 'HR-PAS',
+        'HR-LDS'     => 'HR-L&D',
+        'HR-WELFARE' => 'HR-WELFARE',
+    ];
+
+    $section = $user->section;
+
+    $user->role = $section && isset($rolesMap[strtoupper($section->abbreviation)])
+                  ? $rolesMap[strtoupper($section->abbreviation)]
+                  : null; // default or clear role
+    $user->save();
+
+    return response()->json(['success' => 'User updated successfully!']);
+}
+
+
+    // Activate User
+    public function activate($id)
     {
         $user = User::findOrFail($id);
+        $user->is_active = 1;
+        $user->save();
 
-        $request->validate([
-            'first_name' => 'required',
-            'last_name' => 'required',
-            'division_id' => 'required',
-            'section_id' => 'required',
-        ]);
-
-        $user->update([
-            'division_id' => $request->division_id,
-            'section_id' => $request->section_id,
-            'is_active' => $request->has('is_active'),
-        ]);
-
-        if (!empty($request->password)) {
-            $user->update(['password' => bcrypt($request->password)]);
-        }
-
-        return response()->json(['success' => 'User updated successfully!']);
+        return response()->json(['success' => 'User has been activated successfully.']);
     }
 
+    // Deactivate User
     public function deactivate(Request $request, $id)
     {
         $request->validate([
@@ -138,11 +112,18 @@ class UserManagementController extends Controller
         ]);
 
         $user = User::findOrFail($id);
-        $user->is_active = 0; // deactivate
-        $user->deactivation_reason = $request->reason; // save remarks
+        $user->is_active = 0;
+        $user->deactivation_reason = $request->reason;
         $user->save();
 
         return response()->json(['success' => 'User has been deactivated successfully.']);
     }
 
+    // Get Sections for a Division
+    public function getSections($divisionId)
+    {
+        $division = Division::with('sections')->find($divisionId);
+        $sections = $division ? $division->sections->map(fn($s) => ['id' => $s->id, 'name' => $s->name]) : [];
+        return response()->json($sections);
+    }
 }
