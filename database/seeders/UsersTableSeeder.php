@@ -85,6 +85,7 @@ class UsersTableSeeder extends Seeder
                 'last_name' => 'CRUZ',
                 'extension_name' => null,
                 'gender' => 'MALE',
+                 
                 'civil_status' => 'SINGLE',
                 'height' => '1.75',
                 'weight' => '70',
