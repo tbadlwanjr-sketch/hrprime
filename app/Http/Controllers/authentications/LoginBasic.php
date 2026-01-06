@@ -6,8 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Facades\Mail;
-use App\Mail\OtpMail;
+// use Illuminate\Support\Facades\Mail; // OTP mail disabled
+// use App\Mail\OtpMail; // OTP mail disabled
 use App\Models\User;
 
 class LoginBasic extends Controller
@@ -21,7 +21,7 @@ class LoginBasic extends Controller
     }
 
     /**
-     * Handle login credentials and send OTP
+     * Handle login credentials (OTP disabled)
      */
     public function store(Request $request)
     {
@@ -55,6 +55,7 @@ class LoginBasic extends Controller
             ])->onlyInput('login');
         }
 
+        /* // OTP code disabled
         // Generate OTP
         $otp = random_int(100000, 999999);
 
@@ -70,26 +71,44 @@ class LoginBasic extends Controller
         Mail::to($user->email)->send(new OtpMail($otp));
 
         return redirect()->route('otp.form');
+        */
+
+        // Direct login without OTP
+        Auth::attempt($credentials);
+        $request->session()->regenerate();
+
+        // Role-based redirect
+        return match ($user->role) {
+            'HR-PLANNING' => redirect()->route('content.planning.dashboard'),
+            'HR-Welfare',
+            'HR-PAS',
+            'HR-L&D'      => redirect()->route('dashboard-analytics'),
+            default       => $this->logoutUnauthorized(),
+        };
     }
 
     /**
-     * Show OTP form
+     * Show OTP form (disabled)
      */
     public function showOtpForm()
     {
+        /* // OTP disabled
         if (!Session::has('pending_login')) {
             return redirect()->route('auth-login-basic')
                 ->withErrors(['login' => 'Session expired. Please login again.']);
         }
 
         return view('content.authentications.auth-otp');
+        */
+        return redirect()->route('auth-login-basic'); // OTP disabled
     }
 
     /**
-     * Verify OTP and login user
+     * Verify OTP (disabled)
      */
     public function verifyOtp(Request $request)
     {
+        /* // OTP disabled
         $request->validate([
             'otp' => 'required|numeric',
         ]);
@@ -140,6 +159,8 @@ class LoginBasic extends Controller
             'HR-L&D'      => redirect()->route('dashboard-analytics'),
             default       => $this->logoutUnauthorized(),
         };
+        */
+        return redirect()->route('auth-login-basic'); // OTP disabled
     }
 
     /**
@@ -156,12 +177,12 @@ class LoginBasic extends Controller
     /**
      * Logout user
      */
-      public function logout(Request $request)
-      {
-          Auth::logout();
-          $request->session()->invalidate();
-          $request->session()->regenerateToken();
+    public function logout(Request $request)
+    {
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
 
-          return redirect()->route('auth-login-basic');
-      }
-  }
+        return redirect()->route('auth-login-basic');
+    }
+}
